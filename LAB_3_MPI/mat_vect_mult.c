@@ -177,9 +177,8 @@ void Read_vector(
    double* vec = NULL;
    int i, local_ok = 1;
 
-       printf("Local n %d\n", local_n);
    if (my_rank == 0) {
-      printf("00Rank %d\n", my_rank);
+
       vec = malloc(n*sizeof(double));
       if (vec == NULL) local_ok = 0;
       Check_for_error(local_ok, "Read_vector",
@@ -191,7 +190,7 @@ void Read_vector(
             local_vec, local_n, MPI_DOUBLE, 0, comm);
       free(vec);
    } else {
-      printf("01Rank %d\n", my_rank);
+
       Check_for_error(local_ok, "Read_vector",
             "No se puede alojar temporary vector", comm);
       MPI_Scatter(vec, local_n, MPI_DOUBLE,
@@ -243,9 +242,9 @@ void Print_vector(
       MPI_Comm  comm        /* in */) {
    double* vec = NULL;
    int i, local_ok = 1;
- printf("Rank %d\n", my_rank);
+
    if (my_rank == 0) {
-      printf("10Rank %d\n", my_rank);
+
       vec = malloc(n*sizeof(double));
       if (vec == NULL) local_ok = 0;
       Check_for_error(local_ok, "Print_vector",
@@ -258,8 +257,7 @@ void Print_vector(
       printf("\n");
       free(vec);
    }  else {
-      printf("11Rank %d\n", my_rank);
-       printf("Local n %d\n", local_n);
+
       Check_for_error(local_ok, "Print_vector",
             "Can't allocate temporary vector", comm);
       MPI_Gather(local_vec, local_n, MPI_DOUBLE,
