@@ -114,20 +114,20 @@ int main()
 	double timeIni1, timeFin1,timeIni_par,timeFin_par;
     timeIni1 = omp_get_wtime();
     cout<<"\t-------------PROGRAMA EN FORMA SERIAL-------------"<<endl;
-    //Count_sort_serial (lista_nueva, 100000);
+    Count_sort_serial (lista_nueva, 100000);
     
     timeFin1 = omp_get_wtime();
     cout<<"Tiempo del programa serial = "<< timeFin1 - timeIni1 <<" segundos"<<endl;
     cout<<"\t-------------PROGRAMA EN FORMA PARALELA-------------"<<endl;
  
     timeIni_par = omp_get_wtime();
-    //Count_sort_parallel(lista_nueva, 100000,10);
+    Count_sort_parallel(lista_nueva, 100000,10);
     timeFin_par = omp_get_wtime();
     cout<<"Tiempo del programa paralelo = "<< timeFin_par- timeIni_par<<" segundos"<<endl;
         cout<<"\t-------------PROGRAMA CON QSORT-------------"<<endl;
  
     timeIni_par = omp_get_wtime();
-    //qsort (&lista_nueva[0], 100000, sizeof(float),compvar);
+    qsort (&lista_nueva[0], 100000, sizeof(float),compvar);
   
     timeFin_par = omp_get_wtime();
     cout<<"Tiempo del programa paralelo = "<< timeFin_par- timeIni_par<<" segundos"<<endl;
