@@ -59,10 +59,9 @@ void GrayScale(float m[225][225*3],int width, int height)
   dim3 DimGrid(floor((width-1)/16 + 1), floor((height-1)/16+1), 1);
   dim3 DimBlock(16, 16, 1);
   colorConvert<<<DimGrid,DimBlock>>>(d_B, d_A, width, height);
-  cout << "CPU: Copiando los resultados de la GPU  a la CPU..." << endl;
+ 
   cudaMemcpy(o, d_B, memSize_out, cudaMemcpyDeviceToHost);
 
-  cout << "CPU: Liberando memoria de la GPU" << endl;
   cudaFree(d_A);
   cudaFree(d_B);
   save_data(o);
