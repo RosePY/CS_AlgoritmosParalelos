@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <fstream>
 #include <iostream>
-#define BLUR_SIZE 1
+#define BLUR_SIZE 3
 using namespace std;
 
 __global__
@@ -35,7 +35,7 @@ void blurKernel(float * in, float * out, int w, int h)
 
 void save_data(float r[225][225], float g[225][225], float b[225][225])
 {
-  ofstream archivo("blur.dat");
+  ofstream archivo("bluur.dat");
   for (int i = 0; i < 225; ++i)
   {
     for (int j = 0; j < 225; ++j)
