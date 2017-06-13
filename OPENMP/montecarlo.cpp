@@ -65,10 +65,14 @@ int main()
    long long number_tosses1=pow(10,6);
 
    long long number_tosses2=pow(10,6);
-
+   
+  double top0 = omp_get_wtime();  
     pi = smonte_carlo(number_tosses1);
 
     cout<<"PI calculado: "<<pi<<"\t PI real: "<<pi_original<<"\t error: "<<pi_original-pi<<endl;
+  double tfp0 = omp_get_wtime();
+  cout<<"Tiempo del programa paralelo = "<< tfp0-top0<<" segundos"<<endl;
+
     
     
 }

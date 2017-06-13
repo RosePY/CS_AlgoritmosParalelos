@@ -13,7 +13,6 @@ int find_pos(vector<float> pos, float num)
       {
         return i;
       }
-
    }
 }
 
@@ -134,16 +133,13 @@ int main() {
         float r = static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(25000)));
         datax.push_back(r);
     }
-
-    cout<<"-------------PROGRAMA EJEMPLO LIBRO-------------"<<endl;  
- 
-  parallel_histogram(datos,nbins1);
-  
+  //cout<<"-------------PROGRAMA EJEMPLO LIBRO-------------"<<endl;
+  //parallel_histogram(datos,nbins1);
   cout<<"-------------PROGRAMA CON 1 000 000 DATOS-------------"<<endl;  
-
+  double top0 = omp_get_wtime();  
   parallel_histogram(datax,nbins2);
+  double tfp0 = omp_get_wtime();
+  cout<<"Tiempo del programa paralelo = "<< tfp0-top0<<" segundos"<<endl;
 
- 
-  
   return 0;
 }

@@ -1,0 +1,24 @@
+
+
+g++ -std=c++11 -o monte -fopenmp montecarlo.cpp
+
+qsub .psb
+qstat
+
+#!/bin/bash
+#PBS -N hist
+### Output files
+#PBS -e hist.err
+#PBS -o hist.log
+### Mail to user
+#PBS -M rpy2601@gmail.com
+### Queue name (small, medium, long, verylong) batch is default queue
+#PBS -q batch
+#PBS -l nodes=2:ppn=16
+
+./hist
+
+
+
+
+
