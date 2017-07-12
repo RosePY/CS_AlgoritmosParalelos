@@ -75,6 +75,41 @@ __global__ void MatrixMulTiled(int * d_P, int * d_M, int* d_N,int Width)
 	d_P[Row*Width + Col] = Pvalue;
 }
 
+__global__ void MatrixMulTiledMod(int * d_P, int * d_M, int* d_N,int Width) 
+{
+	__shared__ int Mds[TILE_WIDTH][TILE_WIDTH];
+	__shared__ int Nds[TILE_WIDTH][TILE_WIDTH];
+
+	__shared__ int Nds2[TILE_WIDTH][TILE_WIDTH];
+	int bx = blockIdx.x; int by = blockIdx.y;
+	int tx = threadIdx.x; int ty = threadIdx.y;
+	// Identify the row and column of the d_P element to work on
+	int Row = by * TILE_WIDTH + ty;
+	int Col = bx * TILE_WIDTH*2 + tx;
+	int Pvalue =0 , Pvalue2=0;
+	// Loop over the d_M and d_N tiles required to compute d_P element
+	for (int ph = 0; ph < Width/TILE_WIDTH; ++ph) 
+	{
+		// Collaborative loading of d_M and d_N tiles into shared memory
+		if ((Row< Width) && (ph*TILE_WIDTH+tx)< Width)
+			Mds[ty][tx] = d_M[Row*Width + ph*TILE_WIDTH + tx];
+		if ((ph*TILE_WIDTH+ty)<Width && Col<Width)
+			Nds[ty][tx] = d_N[(ph*TILE_WIDTH + ty)*Width + Col];
+
+		if (( (ph*TILE_WIDTH+ty)<Width) && (Col+TILE_WIDTH<Width))
+			Nds2[ty][tx] = d_N[(ph*TILE_WIDTH + ty)*Width + Col+TILE_WIDTH];
+		__syncthreads();
+		for (int k = 0; k < TILE_WIDTH; ++k)
+		{
+	 		Pvalue += Mds[ty][k] * Nds[k][tx];
+	 		Pvalue2 += Mds[ty][k] * Nds2[k][tx];
+		}
+	 	__syncthreads();
+	}
+	d_P[Row*Width + Col] = Pvalue;
+	d_P[Row*Width + Col +TILE_WIDTH] = Pvalue2;
+}
+
 void printMatrix(string s, int *a , int tam){
 	cout<<s;
 	for(int i=0;i<tam;i++)
@@ -105,8 +140,10 @@ int main(int argc, char *argv[])
 
 	a = (int *)malloc(size); 
 	llenar(a, N);
+	//printMatrix(a);
 	b = (int *)malloc(size); 
 	llenar(b, N);
+	//printMatrix(b);
 	c = (int *)malloc(size);
 	cudaMemcpy(d_a, a, size, cudaMemcpyHostToDevice);
 	cudaMemcpy(d_b, b, size, cudaMemcpyHostToDevice);
@@ -119,7 +156,9 @@ int main(int argc, char *argv[])
 	float elapsedTime;
 	cudaEventCreate(&start);
 	cudaEventRecord(start,0);
-		matrixMulti<<<dimGrid,dimBlock>>>(d_c, d_a, d_b, N);
+		//matrixMulti<<<dimGrid,dimBlock>>>(d_c, d_a, d_b, N);
+		MatrixMulTiledMod<<<dimGrid,dimBlock>>>(d_c, d_a, d_b, N);
+		//matrixMulti<<<dimGrid,dimBlock>>>(d_c, d_a, d_b, N);
 		//MatrixMulTiled<<<dimGrid,dimBlock>>>(d_c, d_a, d_b, N);
 	cudaEventCreate(&stop);
 	cudaEventRecord(stop,0);
@@ -127,7 +166,7 @@ int main(int argc, char *argv[])
 	cudaEventElapsedTime(&elapsedTime, start,stop);
 	printf("Tiempo  : %f ms\n" ,elapsedTime);
 	cudaMemcpy(c, d_c, size, cudaMemcpyDeviceToHost);
-
+	//printMatrix(c);
 	//printMatrix("Printing Matrix A \n",a,N);
 	//printMatrix("Printing Matrix B \n",b,N);
 	//printMatrix("Printing Matrix C \n",c,N);
